@@ -38,6 +38,9 @@ def main():
 
                 grey_letter_count = result.count("r")
                 grey_letters_idx = [letter.start() for letter in re.finditer('r', result)]
+
+                yellow_letter_count = result.count("y")
+                yellow_letters_idx = [letter.start() for letter in re.finditer('y', result)]
                 break          
 
         # End the program if everything is correct
@@ -45,8 +48,8 @@ def main():
             print("Correct word guessed!")
             sys.exit()
         else: # if the user didn't get the word correct, remove it from the list of plausible answers
-            
-            del rem_words[user_guess] 
+            if user_guess in rem_words:
+                del rem_words[user_guess] 
  
         # STEP 1: Strip out all words from the list of remaining words that don't have a green letter in the right position
         # Determine correct letters
@@ -59,8 +62,27 @@ def main():
             for word, letters in dict(rem_words).items():
                 if word[green_letter] != user_guess[green_letter]:
                     del rem_words[word]
-                
-        # STEP 2: Strip out all words that contain grey letters (i.e. letters that aren't in the word in any position) #
+
+        # STEP 2: Strip out all words that don't contain a yellow letter at all
+        yellow_letters = []
+        for idx, letter in enumerate(user_guess):
+            if idx in yellow_letters_idx:
+                yellow_letters.append(letter)
+        
+        print(f"Yellow Letters: {yellow_letters}")
+        for yellow_letter in yellow_letters:
+            for word, letters in dict(rem_words).items():
+                if yellow_letter not in word:
+                    del rem_words[word]
+
+        # STEP 2A: Strip out all words that contain a yellow letter in the inputted position (right letter, wrong spot)
+        for yellow_letter in yellow_letters_idx:
+            for word, letters in dict(rem_words).items():
+                if word[yellow_letter] == user_guess[yellow_letter]:
+                    del rem_words[word]
+
+
+        # STEP 3: Strip out all words that contain grey letters (i.e. letters that aren't in the word in any position) #
 
         # Determine which letters should be removed
         grey_letters = []
@@ -71,7 +93,7 @@ def main():
         # Remove the words with fully incorrect letters
         for grey_letter in grey_letters:
             for word, letters in dict(rem_words).items():
-                if grey_letter in word:
+                if grey_letter in word and grey_letter not in green_letters:
                     del rem_words[word]
 
         print(f"Now removing the following letters: {grey_letters}. Fully correct letters: {green_letters}")
