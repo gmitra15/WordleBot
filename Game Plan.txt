@@ -1,6 +1,6 @@
 DONE * Create dictionary containing all Wordle words
 DONE * User inputs FIRST GUESS
-DONE * User inputs 5 characters indicating guess success (black, yellow, green). For example, b b y y g
+DONE * User inputs 5 characters indicating guess success (gRey, Yellow, Green). For example, r r y y g
 DONE * Loop over dictionary, popping items that don't contain a correct letter in the correct spot
 DONE * Loop over dictionary, popping items that contain fully incorrect letters
 DONE * Loop over dictionary, popping items that don't contain yellow letter
