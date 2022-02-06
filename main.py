@@ -14,7 +14,7 @@ def main():
 
     # Read in list of valid words in Wordle and create dictionary
     rem_words = {}
-    with open("./test_wordl_bank.txt", "r") as reader:
+    with open("./real_word_bank.txt", "r") as reader:
         word_list = reader.read().split(",")
         for word in word_list:
             rem_words[word] = [word[0], word[1], word[2], word[3], word[4]]
@@ -64,24 +64,29 @@ def main():
                 if word[green_letter] != user_guess[green_letter]:
                     del rem_words[word]
 
+        
+
         # STEP 2: Strip out all words that don't contain a yellow letter at all
         yellow_letters = []
         for idx, letter in enumerate(user_guess):
             if idx in yellow_letters_idx:
                 yellow_letters.append(letter)
         
+        
+
         print(f"Yellow Letters: {yellow_letters}")
         for yellow_letter in yellow_letters:
             for word, letters in dict(rem_words).items():
                 if yellow_letter not in word:
                     del rem_words[word]
 
+        
         # STEP 2A: Strip out all words that contain a yellow letter in the inputted position (right letter, wrong spot)
         for yellow_letter in yellow_letters_idx:
             for word, letters in dict(rem_words).items():
                 if word[yellow_letter] == user_guess[yellow_letter]:
                     del rem_words[word]
-
+        
 
         # STEP 3: Strip out all words that contain grey letters (i.e. letters that aren't in the word in any position) #
 
@@ -94,14 +99,32 @@ def main():
         # Remove the words with fully incorrect letters
         for grey_letter in grey_letters:
             for word, letters in dict(rem_words).items():
-                if grey_letter in word and grey_letter not in green_letters:
+                if grey_letter in word and grey_letter not in green_letters and grey_letter not in yellow_letters:
                     del rem_words[word]
+        
 
         print(f"Now removing the following letters: {grey_letters}. Fully correct letters: {green_letters}")
         # print(f"Your next guess should be one of the following: {', '.join([key for key in rem_words.keys()])}")
-        rem_word_list = [key for key in rem_words.keys()]
-        print(f"Make your next guess: {random.choice(rem_word_list)} ({1/len(rem_word_list)*100:0.02f}% chance of success)")
 
+        # Brute force, if possible, pick words without duplicate letters
+        rem_word_list = [key for key in rem_words.keys()]
+        all_unique = False
+        clone = rem_word_list.copy()
+
+        if not rem_word_list: # catches an error that occurs if you type in the wrong values for the results
+            print("Error: List of remaining words is empty, double check results inputs")
+            sys.exit()
+        else:
+            next_guess = random.choice(rem_word_list)
+        all_unique = len(set(rem_words[next_guess])) == 5
+        
+        while all_unique == False and len(clone) > 1:
+            clone.pop(clone.index(next_guess))
+            next_guess = random.choice(clone)
+            all_unique = len(set(rem_words[next_guess])) == 5
+        
+        
+        print(f"Make your next guess: {next_guess} ({1/len(rem_word_list)*100:0.02f}% chance of success)")
 
 if __name__ == "__main__":
     main()
