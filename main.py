@@ -7,6 +7,7 @@ Purpose: Create an interactive solver for popular online word game Wordle
 """
 import sys
 import re
+import random
 
 def main():
 
@@ -97,7 +98,9 @@ def main():
                     del rem_words[word]
 
         print(f"Now removing the following letters: {grey_letters}. Fully correct letters: {green_letters}")
-        print(f"Your next guess should be one of the following: {', '.join([key for key in rem_words.keys()])}")
+        # print(f"Your next guess should be one of the following: {', '.join([key for key in rem_words.keys()])}")
+        rem_word_list = [key for key in rem_words.keys()]
+        print(f"Make your next guess: {random.choice(rem_word_list)} ({1/len(rem_word_list)*100:0.02f}% chance of success)")
 
 
 if __name__ == "__main__":
