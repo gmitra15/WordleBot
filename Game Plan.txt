@@ -1,7 +1,14 @@
 DONE * Create dictionary containing all Wordle words
 DONE * User inputs FIRST GUESS
 DONE * User inputs 5 characters indicating guess success (black, yellow, green). For example, b b y y g
-* Loop over dictionary, popping items that don't contain a correct letter in the correct spot
-* Loop over dictionary, popping items that contain fully incorrect letters
-* Loop over dictionary, popping items that don't contain yellow letter
-* Repeat until user inputs g g g g g or there have been 6 guesses
+DONE * Loop over dictionary, popping items that don't contain a correct letter in the correct spot
+DONE * Loop over dictionary, popping items that contain fully incorrect letters
+DONE * Loop over dictionary, popping items that don't contain yellow letter
+DONE * Loop over dictionary, popping items that have yellow in inputted position
+DONE * Repeat until user inputs g g g g g or there have been 6 guesses
+
+TO DO
+* Optimize word choice
+    Ideas:
+    * Come up with more sophisticated prioritization of words with 5 unique letters
+    * Sort words by frequency in English
