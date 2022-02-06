@@ -13,17 +13,15 @@ def main():
 
     # Read in list of valid words in Wordle and create dictionary
     rem_words = {}
-    with open("./ValidWords.txt", "r") as reader:
+    with open("./test_wordl_bank.txt", "r") as reader:
         word_list = reader.read().split(",")
         for word in word_list:
             rem_words[word] = [word[0], word[1], word[2], word[3], word[4]]
 
-
     # Create set of allowed characters in result
-    allowed = set(["b", "y", "g"]) #black, yellow, green
+    allowed = set(["r", "y", "g"]) #black, yellow, green
     guess_count = 1
     green_letter_count = 0
-    green_letters = []
 
     while guess_count < 6 and green_letter_count < 5:
         while True: # Take in user guesses
@@ -33,10 +31,13 @@ def main():
                 break
 
         while True: # Take in the wordle feedback to the user's guess
-            result = input("Input result of guess (e.g. bbggy)")
-            if len(result) == 5 and set(result) <= allowed:
+            result = input("Input result of guess (e.g. RRGGY == gRey gRey Green Green Yellow): ").lower()
+            if len(result) == 5 and set(result) <= allowed: # if valid input, continue
                 green_letter_count = result.count("g")
                 green_letters_idx = [letter.start() for letter in re.finditer('g', result)]
+
+                grey_letter_count = result.count("r")
+                grey_letters_idx = [letter.start() for letter in re.finditer('r', result)]
                 break          
 
         # End the program if everything is correct
@@ -44,15 +45,36 @@ def main():
             print("Correct word guessed!")
             sys.exit()
         else: # if the user didn't get the word correct, remove it from the list of plausible answers
+            
             del rem_words[user_guess] 
  
-        # Strip out all words from the list of remaining words that don't have a green letter in the right spot
+        # STEP 1: Strip out all words from the list of remaining words that don't have a green letter in the right position
+        # Determine correct letters
+        green_letters = []
+        for idx, letter in enumerate(user_guess):
+            if idx in green_letters_idx:
+                green_letters.append(letter)
+        
         for green_letter in green_letters_idx:
             for word, letters in dict(rem_words).items():
                 if word[green_letter] != user_guess[green_letter]:
                     del rem_words[word]
                 
+        # STEP 2: Strip out all words that contain grey letters (i.e. letters that aren't in the word in any position) #
 
+        # Determine which letters should be removed
+        grey_letters = []
+        for idx, letter in enumerate(user_guess):
+            if idx in grey_letters_idx and letter not in grey_letters:
+                grey_letters.append(letter)
+        
+        # Remove the words with fully incorrect letters
+        for grey_letter in grey_letters:
+            for word, letters in dict(rem_words).items():
+                if grey_letter in word:
+                    del rem_words[word]
+
+        print(f"Now removing the following letters: {grey_letters}. Fully correct letters: {green_letters}")
         print(f"Your next guess should be one of the following: {', '.join([key for key in rem_words.keys()])}")
 
 
